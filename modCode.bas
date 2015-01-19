@@ -37,7 +37,7 @@ Public Const DropDelayerConst As Long = 3 ' turns to wait before doing a step of
 Public Const cte_initHP = 10000
 Public Const cte_initMANA = 10000
 Public Const localstr As String = "127.0.0.1"
-' Public Const longsecretkey = "5ojhgt59823 g5?32fu59psdfqw8rjmvpogihytrmkbpwer1-<cfrtr`et5hu67jsd?4?fjoi5390-**-*fggd-*dfg*--*sdf*-h-*-*sd54sv45h678996¡'486gjbmnm,k"
+' Public Const longsecretkey = "5ojhgt59823 g5?32fu59psdfqw8rjmvpogihytrmkbpwer1-<cfrtr`et5hu67jsd?4?fjoi5390-**-*fggd-*dfg*--*sdf*-h-*-*sd54sv45h678996Â¡'486gjbmnm,k"
 Public Const longsecretkey = "pfiwmvjgjikdfzasdruieopqwfhgkvvbnmklpofufrhufhuhsqaewftswgyguuhbvxhchufudhgoipopeqwiueifhjhsfdzvvcdvhfhfruyiurtuiuwfewqweffswqdepoffr"
 
 ' LEVELSPY - XRAY
@@ -4172,7 +4172,7 @@ Public Function CatchFish(idConnection As Integer) As Long
   #If FinalMode Then
   On Error GoTo errclose
   #End If
-  ' en la version 772 se podia ya usar la caña desde cualquier lado???
+  ' en la version 772 se podia ya usar la caÃ±a desde cualquier lado???
 If (((frmHardcoreCheats.chkEnhancedCheats.Value = True) Or (frmHardcoreCheats.chkTotalWaste.Value = True)) Or (TibiaVersionLong >= 773)) Then
 GoTo justdoit
 End If
@@ -6245,7 +6245,7 @@ Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As 
     isDamageRune = True
 
   Case Else
-    thing = "runes"
+    thing = "item " & GoodHex(RuneB1) & " " & GoodHex(RuneB2)
     isDamageRune = False
   End Select
   If (isDamageRune = True) Then
@@ -7354,7 +7354,7 @@ Public Function DoTurbo(idConnection As Integer) As Long
   ' 00 = north ; 01 = right ; 02 = south ; 03 = left
   curDirPlayer = GetDirectionFromID(idConnection, myID(idConnection))
   
-  'aqui tentativa dash pra por seta nao posiçao do char
+  'aqui tentativa dash pra por seta nao posiÃ§ao do char
   Select Case curDirPlayer
   Case &H0
     cPacket(2) = &H65
