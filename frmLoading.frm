@@ -415,7 +415,7 @@ Private Sub Form_Load()
   #If FinalMode = 1 Then
   If IsInIDE() = True Then
     MsgBox currentAppName & " won't run properly from VB6 IDE in final mode (because a problem with crackd.dll path)" & _
-     vbCrLf & "For debug you should replace all:" & vbCrLf & "#Const FinalMode =0" & vbCrLf & "to" & vbCrLf & "#Const FinalMode =0" & vbCrLf & vbCrLf & "You should also ensure that crackd.dll is found in C:\blackdproxy\", vbOKOnly + vbInformation, "Information for the programmer"
+     vbCrLf & "For debug you should replace all:" & vbCrLf & "#Const FinalMode =0" & vbCrLf & "to" & vbCrLf & "#Const FinalMode =0" & vbCrLf & vbCrLf & "You should also ensure that crackd.dll is found in C:\BlackdProxyNG\Blackd-Proxy-NG\", vbOKOnly + vbInformation, "Information for the programmer"
     End
   End If
   #End If

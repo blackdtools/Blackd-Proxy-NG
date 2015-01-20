@@ -1,1 +1,6 @@
-Línea 18: la clase MSFlexGridLib.MSFlexGrid del control gridEvents no era una clase de control cargada.
+Línea 21: la clase JwldButn2b.JeweledButton del control cmdReloadFiles no era una clase de control cargada.
+Línea 46: la clase JwldButn2b.JeweledButton del control cmdLoadEv no era una clase de control cargada.
+Línea 71: la clase JwldButn2b.JeweledButton del control cmdSaveEv no era una clase de control cargada.
+Línea 96: la clase JwldButn2b.JeweledButton del control cmdModify no era una clase de control cargada.
+Línea 121: la clase JwldButn2b.JeweledButton del control cmdDeleteSel no era una clase de control cargada.
+Línea 146: la clase JwldButn2b.JeweledButton del control cmdAddEvent no era una clase de control cargada.

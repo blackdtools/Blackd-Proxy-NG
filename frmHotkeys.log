@@ -1,1 +1,3 @@
-Línea 18: la clase MSFlexGridLib.MSFlexGrid del control gridHotkeys no era una clase de control cargada.
+Línea 21: la clase JwldButn2b.JeweledButton del control cmdShk no era una clase de control cargada.
+Línea 44: la clase JwldButn2b.JeweledButton del control cmdSave no era una clase de control cargada.
+Línea 67: la clase JwldButn2b.JeweledButton del control cmdDeleteSel no era una clase de control cargada.

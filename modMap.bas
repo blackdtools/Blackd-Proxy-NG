@@ -34,8 +34,8 @@ Public addConfigPaths As String ' list of new config paths here
 Public addConfigVersions As String ' relative versions
 Public addConfigVersionsLongs As String 'relative version longs
 
-Public Const ProxyVersion = "2.8" ' Proxy version ' string version
-Public Const myNumericVersion = 280 ' numeric version
+Public Const ProxyVersion = "2.9" ' Proxy version ' string version
+Public Const myNumericVersion = 290 ' numeric version
 Public Const myAuthProtocol = 2 ' authetication protocol
 Public Const TrialVersion = False ' true=trial version
 
@@ -893,7 +893,7 @@ Public Function SearchFreeSlot(idConnection As Integer) As TypeSearchItemResult2
   res.b4 = 0
   For i = 0 To HIGHEST_BP_ID
     If (Backpack(idConnection, i).open = True) Then
-    If ValidAsBP(Backpack(idConnection, i).Name) = True Then
+    If ValidAsBP(Backpack(idConnection, i).name) = True Then
     limitJ = (Backpack(idConnection, i).cap) - 1
     For j = 0 To limitJ
     tmpb1 = Backpack(idConnection, i).item(j).t1
@@ -926,7 +926,7 @@ Public Function SearchFreeSlotInContainer(idConnection As Integer, i As Byte) As
   res.slotID = &HFF
   res.amount = 0
   res.b4 = 0
-    If ValidAsBP(Backpack(idConnection, i).Name) Then
+    If ValidAsBP(Backpack(idConnection, i).name) Then
     limitJ = (Backpack(idConnection, i).cap) - 1
     For j = 0 To limitJ
       If Backpack(idConnection, i).item(j).t1 = 0 And _
@@ -1245,7 +1245,7 @@ Public Function GetTheMobileInfo(idConnection As Integer, ByRef packet() As Byte
   Dim newID As Double
   Dim outfitType As String
   Dim tileID As Long
-  Dim Name As String
+  Dim name As String
   Dim originalPos As Long
   Dim debugStr As String
   ' tibia 10.36 full: 00 00 AD 01 FF 61 00 00 00 00 00 7A 01 00 40 02 04 00 4E 61 6A 69 64 00 81 00 39 71 5F 71 00 00 00 00 00 32 00 00 00 00 02 02 FF 00 00 01 00 FF
@@ -1275,13 +1275,13 @@ Public Function GetTheMobileInfo(idConnection As Integer, ByRef packet() As Byte
   resF.pos = resF.pos + 2
   
   ' get the name of the mobile
-  Name = ""
+  name = ""
   For i = resF.pos To -1 + lon + resF.pos
-    Name = Name & Chr(packet(i))
+    name = name & Chr(packet(i))
   Next i
   
   ' add new ID
-  AddIDname idConnection, newID, Name
+  AddIDname idConnection, newID, name
   resF.pos = resF.pos + lon
   
   ' give position after having read mobile info
@@ -3606,7 +3606,7 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
       debugChainType = debugChainType & "bpID:" & CStr(tempID) & ","
       debugChainType = debugChainType & "HIGHEST_BP_ID:" & CStr(HIGHEST_BP_ID) & ","
       Backpack(idConnection, tempID).open = True
-      Backpack(idConnection, tempID).Name = mobName
+      Backpack(idConnection, tempID).name = mobName
       Backpack(idConnection, tempID).cap = lonCap
       If lonCap > (HIGHEST_ITEM_BPSLOT + 1) Then
         LogOnFile "errors.txt", "WARNING: detected cotainer with outstanding cap (" & CStr(lonCap) & ")"
@@ -3704,7 +3704,7 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
       pauseStacking(idConnection) = 0
       tempID = CLng(packet(pos + 1)) 'ID?
       Backpack(idConnection, tempID).open = False
-      Backpack(idConnection, tempID).Name = ""
+      Backpack(idConnection, tempID).name = ""
       Backpack(idConnection, tempID).cap = 0
       Backpack(idConnection, tempID).used = 0
       ' SendMessageToClient idConnection, "You closed a backpack ID : " & CStr(lonN), "GM BlackdProxy"
