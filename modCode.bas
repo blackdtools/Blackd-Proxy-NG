@@ -6196,6 +6196,7 @@ badError:
   frmMain.txtPackets.Text = frmMain.txtPackets.Text & vbCrLf & "got UNEXPECTED ERROR IN ID " & idConnection & " (" & Err.Description & ") when client sent a packet . Description: " & Err.Description
   ApplyHardcoreCheats = 0
 End Function
+
 Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As Byte, runeB2 As Byte) As Long
   Dim aRes As Long
   Dim lTarget As String
@@ -6206,7 +6207,7 @@ Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As 
   Dim fRes As TypeSearchItemResult2
   Dim myS As Byte
   Dim X As Long
-  Dim Y As Long
+  Dim y As Long
   Dim s As Long
   Dim tileID As Long
   Dim tmpID As Double
@@ -6261,9 +6262,8 @@ Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As 
   End If
   
   
-  If target = "" Then ' use last targeted
-    target = currTargetName(idConnection)
-  End If
+  Dim lLastTargetName As String
+  lLastTargetName = LCase(currTargetName(idConnection)) 'currTargetName=name of last target, even if there is no target atm..
   SpecialSource = False
   If ((frmHardcoreCheats.chkTotalWaste.Value = True) And (TibiaVersionLong >= 773)) Then
     SpecialSource = True
@@ -6293,20 +6293,22 @@ Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As 
   End If
   ' search the person
   lTarget = LCase(target)
-  For Y = -6 To 7
+  Dim RedSquareID As Long
+  RedSquareID = ReadRedSquare(idConnection)
+  For y = -6 To 7
     For X = -8 To 9
       For s = 1 To 10
-        tmpID = Matrix(Y, X, myZ(idConnection), idConnection).s(s).dblID
+        tmpID = Matrix(y, X, myZ(idConnection), idConnection).s(s).dblID
         If tmpID = 0 Then
           lSquare = ""
         Else
           lSquare = LCase(GetNameFromID(idConnection, tmpID))
         End If
-        If lSquare = lTarget Then
+        If (Len(lTarget) <> 0 And lSquare = lTarget) Or (Len(lTarget) = 0 And RedSquareID <> 0 And RedSquareID = tmpID) Or (RedSquareID = 0 And Len(lTarget) = 0 And Len(lLastTargetName) <> 0 And lLastTargetName = lSquare) Then
         '0D 00 84 FF FF 40 00 00 40 0C 00 CB DD 01 40
           If SpecialSource = True Then
                sCheat = "83 FF FF 00 00 00 " & GoodHex(runeB1) & " " & GoodHex(runeB2) & " " & _
-               "00 " & GetHexStrFromPosition(myX(idConnection) + X, myY(idConnection) + Y, myZ(idConnection)) & _
+               "00 " & GetHexStrFromPosition(myX(idConnection) + X, myY(idConnection) + y, myZ(idConnection)) & _
                " 63 00 " & GoodHex(CByte(s))
                SafeCastCheatString "SendAimbot1", idConnection, sCheat
           Else
@@ -6315,7 +6317,7 @@ Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As 
                DoEvents 'added in 8.71
                sCheat = "83 FF FF " & GoodHex(&H40 + fRes.bpID) & " 00 " & _
                GoodHex(fRes.slotID) & " " & GoodHex(runeB1) & " " & GoodHex(runeB2) & " " & _
-               GoodHex(fRes.slotID) & " " & GetHexStrFromPosition(myX(idConnection) + X, myY(idConnection) + Y, myZ(idConnection)) & _
+               GoodHex(fRes.slotID) & " " & GetHexStrFromPosition(myX(idConnection) + X, myY(idConnection) + y, myZ(idConnection)) & _
                " 63 00 " & GoodHex(CByte(s))
               SafeCastCheatString "SendAimbot2", idConnection, sCheat
           End If
@@ -6324,7 +6326,8 @@ Public Function SendAimbot(target As String, idConnection As Integer, runeB1 As 
         End If
       Next s
     Next X
-  Next Y
+  Next y
+  aRes = SendSystemMessageToClient(idConnection, "Sorry, " & target & " is not on BlackdProxy track")
   SendAimbot = 0
   Exit Function
 errclose:
@@ -6333,7 +6336,6 @@ errclose:
   DoEvents
   SendAimbot = -1
 End Function
-
 
 Public Function SendMobAimbot(target As String, idConnection As Integer, runeB1 As Byte, runeB2 As Byte) As Long
   Dim aRes As Long
