@@ -1627,8 +1627,12 @@ Public Sub ProcessScriptLine(Sid As Integer)
 
 fastSet:
   currLineNumber = exeLine(Sid)
+  ' FIXED!
+  'Debug.Print "Cavebot ID selected = " & cavebotIDselected & " Currently executing: " & Sid
+  If (cavebotIDselected = Sid) Then ' Only display current line being executed if it is our selected char
+    frmCavebot.lstScript.ListIndex = currLineNumber  ' ListIndex starts at 0, currLineNumber starts at 0
+  End If
   If DoingNewLoot(Sid) = True Then
-  frmCavebot.lstScript.ListIndex = currLineNumber - 1 'why -1? ListIndex start at 0, currLineNumber start at 1
     currLine = "move " & CStr(DoingNewLootX(Sid)) & "," & _
      CStr(DoingNewLootY(Sid)) & "," & _
      CStr(DoingNewLootZ(Sid))
