@@ -2243,7 +2243,8 @@ Public Sub TurnCavebotState(idConnection As Integer, thisValue As Boolean)
       AllowRepositionAtStart(idConnection) = 1
       AllowRepositionAtTrap(idConnection) = 1
       CavebotChaoticMode(idConnection) = 0
-      exeLine(idConnection) = 0
+      'exeLine(idConnection) = 0
+      updateExeLine idConnection, 0, False, False
       cavebotOnTrapGiveAlarm(idConnection) = False
       lastAttackedIDstatus(idConnection) = 0
 
@@ -2330,7 +2331,8 @@ Public Sub TurnCavebotState(idConnection As Integer, thisValue As Boolean)
       cavebotEnabled(idConnection) = False
       EnableMaxAttackTime(idConnection) = False
       autoLoot(idConnection) = False
-      exeLine(idConnection) = 0
+      'exeLine(idConnection) = 0
+      updateExeLine idConnection, 0, False, False
       lastAttackedID(idConnection) = 0
       CavebotTimeWithSameTarget(idConnection) = GetTickCount()
       CavebotTimeStart(idConnection) = GetTickCount()
@@ -3123,7 +3125,8 @@ Private Sub TimerScript_Timer()
         ' end of script?
         If (exeLine(Sid) >= cavebotLenght(Sid)) Then
           ' finish and disable
-          exeLine(Sid) = 0
+          'exeLine(Sid) = 0
+          updateExeLine Sid, 0, False
           TurnCavebotState Sid, False
           executingCavebot(Sid) = False
           Exit Sub

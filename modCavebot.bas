@@ -152,6 +152,25 @@ Public SpellKillHPlimit() As Long
 Public SpellKillMaxHPlimit() As Long
 '...
 
+
+
+' Sid=client id
+' newExeLine= new line you want to set.
+' RelativeToOldLine = should the new line number be relative to the old line (+1?), or absolute?
+' (OPTIONAL) updateLst , set it to false if you don't want to update frmCavebot.lstScript.ListIndex
+Public Sub updateExeLine(ByVal Sid As Long, ByVal newExeLine As Long, ByVal RelativeToOldLine As Boolean, Optional updateLst As Boolean = True)
+    If (RelativeToOldLine = True) Then
+        exeLine(Sid) = exeLine(Sid) + newExeLine
+    Else
+        exeLine(Sid) = newExeLine
+    End If
+    If (updateLst = True) Then
+        If (modMap.cavebotIDselected = Sid) Then
+        frmCavebot.lstScript.ListIndex = exeLine(Sid)
+        End If
+    End If
+End Sub
+
 Public Sub AddKillPriority(idConnection As Integer, str As String, lngPriority As Long)
   ' add item to dictionary
   Dim res As Boolean
@@ -956,7 +975,8 @@ Case 10
   strDebug = strDebug & " > 10 : Choosing other depot"
   onDepotPhase(Sid) = 0 'changed from 1 to 0 in 8.74
   If exeLine(Sid) > 0 Then
-    exeLine(Sid) = exeLine(Sid) - 1
+    'exeLine(Sid) = exeLine(Sid) - 1
+    updateExeLine Sid, -1, True
   End If
   moveRetry(Sid) = 0
   status = 32
@@ -1406,7 +1426,8 @@ Public Function ProcessCondition(Sid As Integer, currLine As String, pos As Long
             DoEvents
             frmCavebot.TurnCavebotState Sid, False
         Else
-            exeLine(Sid) = actionLine
+            ' exeLine(Sid) = actionLine
+            updateExeLine Sid, actionLine, False
             If publicDebugMode = True Then
               aRes = SendLogSystemMessageToClient(Sid, "Condition (" & part1 & " " & opstr & " " & part2 & ") = TRUE")
               DoEvents
@@ -1418,7 +1439,8 @@ Public Function ProcessCondition(Sid As Integer, currLine As String, pos As Long
            ProcessCondition = -1
         Exit Function
    Else
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     If publicDebugMode = True Then
       aRes = SendLogSystemMessageToClient(Sid, "Condition (" & part1 & " " & opstr & " " & part2 & ") = FALSE")
       DoEvents
@@ -1471,7 +1493,8 @@ Public Sub ProcessScriptLine(Sid As Integer)
         
   ' process events
   If ((DangerGM(Sid) = True) Or (DangerPK(Sid) = True)) And cavebotOnDanger(Sid) <> -1 Then
-    exeLine(Sid) = cavebotOnDanger(Sid)
+    'exeLine(Sid) = cavebotOnDanger(Sid)
+    updateExeLine Sid, cavebotOnDanger(Sid), False
     cavebotOnDanger(Sid) = -1
   End If
   'If CheatsPaused(Sid) = True Then
@@ -1629,9 +1652,9 @@ fastSet:
   currLineNumber = exeLine(Sid)
   ' FIXED!
   'Debug.Print "Cavebot ID selected = " & cavebotIDselected & " Currently executing: " & Sid
-  If (cavebotIDselected = Sid) Then ' Only display current line being executed if it is our selected char
-    frmCavebot.lstScript.ListIndex = currLineNumber  ' ListIndex starts at 0, currLineNumber starts at 0
-  End If
+  'If (cavebotIDselected = Sid) Then ' Only display current line being executed if it is our selected char
+  '  frmCavebot.lstScript.ListIndex = currLineNumber  ' ListIndex starts at 0, currLineNumber starts at 0
+  'End If
   If DoingNewLoot(Sid) = True Then
     currLine = "move " & CStr(DoingNewLootX(Sid)) & "," & _
      CStr(DoingNewLootY(Sid)) & "," & _
@@ -1651,7 +1674,8 @@ fastSet:
     Exit Sub
   Else
     If (Left(currLine, 1) = "#") Or (Left(currLine, 1) = ":") Then
-      exeLine(Sid) = exeLine(Sid) + 1
+      'exeLine(Sid) = exeLine(Sid) + 1
+      updateExeLine Sid, 1, True
       GoTo fastSet
     End If
   End If
@@ -1703,7 +1727,8 @@ fastSet:
            (myZ(Sid) = val3) Then
           ' move completed
           If DoingNewLoot(Sid) = False Then
-            exeLine(Sid) = exeLine(Sid) + 1
+            'exeLine(Sid) = exeLine(Sid) + 1
+            updateExeLine Sid, 1, True
           
           Else
             
@@ -1735,6 +1760,7 @@ fastSet:
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     val1 = CLng(param1)
     exeLine(Sid) = val1
+    updateExeLine Sid, val1, False
    ' SendLogSystemMessageToClient sID, "Script jumped to line " & val1
     DoEvents
   Case "fishx"
@@ -1743,7 +1769,8 @@ fastSet:
     fishCounter(Sid) = fishCounter(Sid) + 1
     If fishCounter(Sid) >= val1 Then
       ' fishing completed after this cast
-      exeLine(Sid) = exeLine(Sid) + 1
+      'exeLine(Sid) = exeLine(Sid) + 1
+      updateExeLine Sid, 1, True
       ' reset counter
       fishCounter(Sid) = 0
     End If
@@ -1754,7 +1781,8 @@ fastSet:
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     val1 = CLng(param1)
     waitCounter(Sid) = GetTickCount() + (val1 * 1000)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
   Case "closeconnection"
     frmMain.txtPackets.Text = frmMain.txtPackets.Text & vbCrLf & "#Client " & Sid & " (" & CharacterName(Sid) & ")closed by script#"
     GiveServerError "Client closed because script executed closeConnection", Sid
@@ -1764,7 +1792,8 @@ fastSet:
     aRes = DoOneStack(Sid)
     If aRes = 0 Then
       ' stacking process completed
-      exeLine(Sid) = exeLine(Sid) + 1
+      'exeLine(Sid) = exeLine(Sid) + 1
+      updateExeLine Sid, 1, True
     End If
   Case "setpriority"
     usingPriorities(Sid) = True
@@ -1776,18 +1805,21 @@ fastSet:
         DoEvents
     End If
     AddKillPriority Sid, LCase(param1), safeLong(param2)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setmeleekill"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     AddMelee Sid, LCase(param1)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setmaxattacktimems"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     maxAttackTime(Sid) = safeLong(param1)
     ChaotizeNextMaxAttackTime Sid
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
     If EnableMaxAttackTime(Sid) = False Then
         aRes = SendLogSystemMessageToClient(Sid, "WARNING: setmaxattacktimems will have no effect unless you use SetBot EnableMaxAttackTime=1")
@@ -1796,7 +1828,8 @@ fastSet:
   Case "setmaxhit"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     maxHit(Sid) = safeLong(param1)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setspellkill"
     param1 = Trim$(ParseString(currLine, pos, lenCurrLine, ","))
@@ -1807,14 +1840,16 @@ fastSet:
     val3 = CLng(param3)
     AddMelee Sid, LCase(param1)
     AddSpellKill Sid, LCase(param1), param2, val3
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setexorivis"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     AddMelee Sid, LCase(param1)
     AddExorivis Sid, LCase(param1)
     AddExoriType Sid, LCase(param1), 1
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     CavebotHaveSpecials(Sid) = True
     fastM = True
   Case "setexorimort"
@@ -1822,26 +1857,30 @@ fastSet:
     AddMelee Sid, LCase(param1)
     AddExorivis Sid, LCase(param1)
     AddExoriType Sid, LCase(param1), 2
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     CavebotHaveSpecials(Sid) = True
     fastM = True
   Case "setavoidfront"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     AddAvoid Sid, LCase(param1)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     CavebotHaveSpecials(Sid) = True
     fastM = True
   Case "sethmmkill"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     AddHMM Sid, LCase(param1)
     AddShotType Sid, LCase(param1), tileID_HMM
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setsdkill"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     AddHMM Sid, LCase(param1)
     AddShotType Sid, LCase(param1), tileID_SD
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "resetkill"
     RemoveAllMelee Sid
@@ -1851,7 +1890,8 @@ fastSet:
     RemoveAllShotType Sid
     RemoveAllExoriType Sid
     CavebotHaveSpecials(Sid) = False
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setbot"
     param1 = ParseString(currLine, pos, lenCurrLine, "=")
@@ -1908,7 +1948,8 @@ fastSet:
             AllowRepositionAtTrap(Sid) = val2
         End Select
       
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "useitem"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
@@ -1921,7 +1962,8 @@ fastSet:
     val3 = CLng(param3)
     PerformUseItem Sid, val1, val2, val3
      ' completed
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
   Case "iftrue"
     aRes = ProcessCondition(Sid, currLine, pos, lenCurrLine)
   Case "ifenoughitemsgoto"
@@ -1945,13 +1987,15 @@ fastSet:
   
     am = CountTheItemsForUser(Sid, param1) ' changed since 9.38
     If am >= val2 Then
-      exeLine(Sid) = val3
+      'exeLine(Sid) = val3
+      updateExeLine Sid, val3, False
       If publicDebugMode = True Then
         aRes = SendLogSystemMessageToClient(Sid, "Condition (" & am & " number>= " & val2 & ") = TRUE")
         DoEvents
       End If
     Else
-      exeLine(Sid) = exeLine(Sid) + 1
+      'exeLine(Sid) = exeLine(Sid) + 1
+      updateExeLine Sid, 1, True
       If publicDebugMode = True Then
         aRes = SendLogSystemMessageToClient(Sid, "Condition  (" & am & " number>= " & val2 & ") = FALSE")
         DoEvents
@@ -1972,13 +2016,15 @@ fastSet:
     am = CountTheItemsForUser(Sid, param1) ' changed since 9.38
     ' compare now
     If am >= val2 Then ' false : continue with next line of the script
-      exeLine(Sid) = exeLine(Sid) + 1
+      'exeLine(Sid) = exeLine(Sid) + 1
+      updateExeLine Sid, 1, True
       If publicDebugMode = True Then
         aRes = SendLogSystemMessageToClient(Sid, "Condition (" & am & " number< " & val2 & ") = FALSE")
         DoEvents
       End If
     Else ' true : jump to given line
-      exeLine(Sid) = val3
+     ' exeLine(Sid) = val3
+      updateExeLine Sid, val3, False
       If publicDebugMode = True Then
         aRes = SendLogSystemMessageToClient(Sid, "Condition  (" & am & " number< " & val2 & ") = TRUE")
         DoEvents
@@ -1986,38 +2032,44 @@ fastSet:
     End If
   Case "setretryattacks"
     AvoidReAttacks(Sid) = False
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
   Case "setdontretryattacks"
     AvoidReAttacks(Sid) = True
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
   Case "saymessage"
     param1 = Trim$(currLine)
     param2 = Right$(param1, Len(param1) - 11)
     aRes = ExecuteInTibia(param2, Sid, True)
     DoEvents
     'CastSpell sid, param1
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
   Case "sayintrade"
     param1 = Trim$(currLine)
     param2 = Right$(param1, Len(param1) - 11)
     aRes = ExecuteInTibia("exiva sayt:" & param2, Sid, True)
     DoEvents
     'CastSpell sid, param1
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
   Case "fastexiva"
     param1 = Trim$(currLine)
     param2 = Right$(param1, Len(param1) - 10)
     aRes = ExecuteInTibia("exiva " & param2, Sid, True)
     DoEvents
     'CastSpell sid, param1
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     ' instantly jump to next
     GoTo fastSet
   Case "ondangergoto"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     val1 = CLng(param1)
     cavebotOnDanger(Sid) = val1
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "ongmcloseconnection"
     If ((TibiaVersionLong < 811) Or (Antibanmode = 0)) Then
@@ -2026,45 +2078,55 @@ fastSet:
         aRes = SendLogSystemMessageToClient(Sid, "WARNING: ongmcloseconnection is being ignored since Tibia 8.11 (you would get banished other way) Please delete that line from your script")
         DoEvents
     End If
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "ontrapgivealarm"
     cavebotOnTrapGiveAlarm(Sid) = True
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "ongmpause"
     cavebotOnGMpause(Sid) = True
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "onplayerpause-"
     cavebotOnPLAYERpause(Sid) = True
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setnofollow"
     setFollowTarget(Sid) = False
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setfollow"
     setFollowTarget(Sid) = True
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setlooton"
     autoLoot(Sid) = True
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setlootoff"
     autoLoot(Sid) = False
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setloot"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     AddGoodLoot Sid, GetTheLongFromFiveChr(param1)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setnoloot"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     RemoveGoodLoot Sid, GetTheLongFromFiveChr(param1)
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setuseitem"
     param1 = Trim$(ParseString(currLine, pos, lenCurrLine, ":"))
@@ -2075,43 +2137,51 @@ fastSet:
     AddSETUSEITEM Sid, param2, param1
     SendLogSystemMessageToClient Sid, "Cavebot will now use item '" & param1 & "' on near items with id '" & param2 & "'"
     
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setlootdistance"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     val1 = CLng(param1)
     AllowedLootDistance(Sid) = val1
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "resetloot"
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     RemoveAllGoodLoot Sid
     fastM = True
   Case "setchaoticmovesoff"
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     'CavebotChaoticMode(Sid) = 0
     SendLogSystemMessageToClient Sid, "Warning: chaoticmoves setting is now ignored."
     fastM = True
   Case "setchaoticmoveson"
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     'CavebotChaoticMode(Sid) = 1
     SendLogSystemMessageToClient Sid, "Warning: chaoticmoves setting is now ignored."
     fastM = True
   Case "setany"
     friendlyMode(Sid) = 0
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setfriendly"
     friendlyMode(Sid) = 1
     'SendLogSystemMessageToClient sid, "Friendly mode activated"
     'DoEvents
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "setveryfriendly"
     friendlyMode(Sid) = 2
     'SendLogSystemMessageToClient sid, "Friendly mode activated"
     'DoEvents
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     fastM = True
   Case "putlootondepot"
     If onDepotPhase(Sid) = 0 Then
@@ -2127,7 +2197,8 @@ fastSet:
       Else
         onDepotPhase(Sid) = 0 'end
         ' could not find depot
-        exeLine(Sid) = exeLine(Sid) + 1
+        'exeLine(Sid) = exeLine(Sid) + 1
+        updateExeLine Sid, 1, True
       End If
     ElseIf onDepotPhase(Sid) = 2 Then
     If (myX(Sid) > (depotX(Sid) - 2)) And (myX(Sid) < (depotX(Sid) + 2)) And _
@@ -2166,7 +2237,8 @@ fastSet:
       aRes = DropLoot(Sid)
       If aRes = -1 Then
         onDepotPhase(Sid) = 0 'end of depot deploy command
-        exeLine(Sid) = exeLine(Sid) + 1
+        'exeLine(Sid) = exeLine(Sid) + 1
+        updateExeLine Sid, 1, True
       End If
       
     End If
@@ -2195,7 +2267,8 @@ fastSet:
         aRes = DropLootToGround(Sid)
         If aRes = -1 Then
           onDepotPhase(Sid) = 0 'end of ground deploy command
-          exeLine(Sid) = exeLine(Sid) + 1
+          'exeLine(Sid) = exeLine(Sid) + 1
+          updateExeLine Sid, 1, True
         End If
       End If
     Else
@@ -2203,7 +2276,8 @@ fastSet:
       PerformMove Sid, val1, val2, val3
     End If
   Case Else
-    exeLine(Sid) = exeLine(Sid) + 1
+    'exeLine(Sid) = exeLine(Sid) + 1
+    updateExeLine Sid, 1, True
     SendLogSystemMessageToClient Sid, "Unknown command at line " & currLineNumber & " : " & mainCommand
     DoEvents
   End Select
@@ -6734,7 +6808,8 @@ Public Sub RepositionScript(idConnection As Integer, firstLine As Long, lastLine
       aRes = SendLogSystemMessageToClient(idConnection, "[Debug] Optimized execution : jump from " & exeLine(idConnection) & " to " & bestLine)
       DoEvents
     End If
-    exeLine(idConnection) = bestLine
+   ' exeLine(idConnection) = bestLine
+    updateExeLine idConnection, bestLine, False
   End If
 End Sub
 
@@ -6922,6 +6997,7 @@ anotherRound:
     LogOnFile "what.txt", "****************" & "Took decision of changing line to :" & bestLine & vbCrLf & "****************"
      #End If
     exeLine(idConnection) = bestLine
+    updateExeLine idConnection, bestLine, False
   End If
 
 End Sub

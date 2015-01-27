@@ -70,7 +70,12 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-    strMsg = "Blackd Proxy NG 3.0" & vbCrLf & _
+    strMsg = "Blackd Proxy NG 3.1" & vbCrLf & _
+     "----------------------------" & vbCrLf & _
+     " - Minimum changes to work in all Tibia versions up to 10.74" & vbCrLf & _
+     " - Cavebot form will now display the current line being executed."
+     
+    strMsg = strMsg & vbCrLf & "Blackd Proxy NG 3.0" & vbCrLf & _
      "----------------------------" & vbCrLf & _
      " - Fixed a bug with mc caveboting. Sorry for taking so much time."
      
