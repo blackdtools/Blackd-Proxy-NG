@@ -1759,7 +1759,7 @@ fastSet:
   Case "gotoscriptline"
     param1 = ParseString(currLine, pos, lenCurrLine, ",")
     val1 = CLng(param1)
-    exeLine(Sid) = val1
+    ' exeLine(Sid) = val1
     updateExeLine Sid, val1, False
    ' SendLogSystemMessageToClient sID, "Script jumped to line " & val1
     DoEvents
@@ -6996,7 +6996,7 @@ anotherRound:
     #If withdebugreposition = True Then
     LogOnFile "what.txt", "****************" & "Took decision of changing line to :" & bestLine & vbCrLf & "****************"
      #End If
-    exeLine(idConnection) = bestLine
+    'exeLine(idConnection) = bestLine
     updateExeLine idConnection, bestLine, False
   End If
 
