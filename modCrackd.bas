@@ -13,15 +13,7 @@ End Type
 '   (fill with random trash if required)
 ' crackd.dll functions expect to receive the packet size (in bytes)
 '   in the first two bytes of the packet array
-#If FinalMode Then
 
-'Public Declare Function EncipherTibia Lib _
-    "crackd.dll" (ByRef firstPacketByte As Byte, _
-    ByRef firstKeyByte As Byte) As Long
-
-'Public Declare Function DecipherTibia Lib _
-    "crackd.dll" (ByRef firstPacketByte As Byte, _
-    ByRef firstKeyByte As Byte) As Long
 
 Public Declare Function EncipherTibiaProtected Lib _
     "crackd.dll" (ByRef firstPacketByte As Byte, _
@@ -47,34 +39,6 @@ Public Declare Function BlackdForceWrite Lib _
     
     
 
-#Else
-
-
-    
-Public Declare Function EncipherTibiaProtected Lib _
-    "C:\BlackdProxyNG\Blackd-Proxy-NG\crackd.dll" (ByRef firstPacketByte As Byte, _
-    ByRef firstKeyByte As Byte, ByVal uboundpacket As Long, ByVal uboundkey As Long) As Long
-
-Public Declare Function DecipherTibiaProtected Lib _
-    "C:\BlackdProxyNG\Blackd-Proxy-NG\crackd.dll" (ByRef firstPacketByte As Byte, _
-    ByRef firstKeyByte As Byte, ByVal uboundpacket As Long, ByVal uboundkey As Long) As Long
-    
-Public Declare Function EncipherTibiaProtectedSP Lib _
-    "C:\BlackdProxyNG\Blackd-Proxy-NG\crackd.dll" (ByRef firstPacketByte As Byte, _
-    ByRef firstKeyByte As Byte, ByVal uboundpacket As Long, ByVal uboundkey As Long) As Long
-
-Public Declare Function DecipherTibiaProtectedSP Lib _
-    "C:\BlackdProxyNG\Blackd-Proxy-NG\crackd.dll" (ByRef firstPacketByte As Byte, _
-    ByRef firstKeyByte As Byte, ByVal uboundpacket As Long, ByVal uboundkey As Long) As Long
-
-Public Declare Function GetTibiaCRC Lib _
-    "C:\BlackdProxyNG\Blackd-Proxy-NG\crackd.dll" (ByRef firstPacketByte As Byte, ByVal uboundpacketMinus6 As Long) As Long
-
-Public Declare Function BlackdForceWrite Lib _
-    "C:\BlackdProxyNG\Blackd-Proxy-NG\crackd.dll" (ByVal address As Long, ByRef mybuffer As Byte, ByVal mybuffersize As Long, ByVal hwndClientWindow As Long) As Long
-    
-
-#End If
 
 Public Declare Sub RtlMoveMemory Lib "Kernel32" ( _
     lpDest As Any, _

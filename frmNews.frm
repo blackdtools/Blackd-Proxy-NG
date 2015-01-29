@@ -70,7 +70,11 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-    strMsg = "Blackd Proxy NG 3.2" & vbCrLf & _
+    strMsg = "Blackd Proxy NG 3.3" & vbCrLf & _
+     "----------------------------" & vbCrLf & _
+     " - Fixed a problem reading dlls while executing code directly from sources."
+     
+    strMsg = strMsg & vbCrLf & "Blackd Proxy NG 3.2" & vbCrLf & _
      "----------------------------" & vbCrLf & _
      " - Fixed a minor bug in cavebot."
      

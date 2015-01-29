@@ -448,7 +448,7 @@ Public proxyChecker As Long
 Public tibiaEntryServer As String
 
 
-
+Public gISIDE As Boolean
 
 Public fakemessagesLevel As Long
 Public NeedToIgnoreFirstGamePacket() As Boolean
@@ -11425,5 +11425,22 @@ Public Function UseItemOnName(idConnection As Integer, ByVal strTile As String) 
     Exit Function
 goterr:
     UseItemOnName = -1
+End Function
+
+
+Public Function IsIDE() As Boolean '
+        gISIDE = False
+        'This line is only executed if running in the IDE and then returns True
+        Debug.Assert CheckIDE
+        If gISIDE Then
+          IsIDE = True
+        Else
+          IsIDE = False
+        End If
+End Function
+
+Private Function CheckIDE() As Boolean ' this is a helper function for Public Function IsIDE()
+        gISIDE = True 'set global flag
+        CheckIDE = True
 End Function
 
