@@ -7442,7 +7442,9 @@ Private Function LearnFromServerLogin(ByRef packet() As Byte, ByVal index As Int
             End If
        End If
     Case &H14
-      If TibiaVersionLong >= 1012 Then
+      If TibiaVersionLong >= 1074 Then
+        res = PacketIPchange5b(packet, index, strIP, bstart)
+      ElseIf TibiaVersionLong >= 1012 Then
         res = PacketIPchange4(packet, index, strIP, bstart)
       ElseIf TibiaVersionLong >= 1011 Then
         res = PacketIPchange3(packet, index, strIP, bstart)

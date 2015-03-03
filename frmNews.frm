@@ -70,9 +70,13 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-    strMsg = "Blackd Proxy NG 3.6" & vbCrLf & _
+    strMsg = "Blackd Proxy NG 3.7" & vbCrLf & _
      "----------------------------" & vbCrLf & _
-     " - Updated packet parser for Tibia 10.76"
+     " - Fixed login bug in OT servers 10.74+"
+
+    strMsg = strMsg & vbCrLf & "Blackd Proxy NG 3.6" & vbCrLf & _
+     "----------------------------" & vbCrLf & _
+     " - Updated parser for new packets at Tibia 10.76"
      
     strMsg = strMsg & vbCrLf & "Blackd Proxy NG 3.5" & vbCrLf & _
      "----------------------------" & vbCrLf & _
