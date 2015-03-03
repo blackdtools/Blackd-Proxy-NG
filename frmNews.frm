@@ -70,7 +70,11 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-    strMsg = "Blackd Proxy NG 3.7" & vbCrLf & _
+    strMsg = "Blackd Proxy NG 3.8" & vbCrLf & _
+     "----------------------------" & vbCrLf & _
+     " - Fixed bug that happened when a cavebot script reached the end."
+     
+    strMsg = strMsg & vbCrLf & "Blackd Proxy NG 3.7" & vbCrLf & _
      "----------------------------" & vbCrLf & _
      " - Fixed login bug in OT servers 10.74+"
 
