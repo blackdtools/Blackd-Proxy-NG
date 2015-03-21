@@ -34,8 +34,8 @@ Public addConfigPaths As String ' list of new config paths here
 Public addConfigVersions As String ' relative versions
 Public addConfigVersionsLongs As String 'relative version longs
 
-Public Const ProxyVersion = "3.8" ' Proxy version ' string version
-Public Const myNumericVersion = 380 ' numeric version
+Public Const ProxyVersion = "3.9" ' Proxy version ' string version
+Public Const myNumericVersion = 390 ' numeric version
 Public Const myAuthProtocol = 2 ' authetication protocol
 Public Const TrialVersion = False ' true=trial version
 
@@ -2897,6 +2897,9 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
        If TibiaVersionLong >= 870 Then
         pos = pos + 1 '  1 new byte since Tibia 8.7
        End If
+       If TibiaVersionLong >= 1076 Then ' maybe before 10.76 too - unconfirmed
+         pos = pos + 1 '  1 new byte since Tibia 10.76
+       End If
        If (cavebotEnabled(idConnection) = True) Or (RuneMakerOptions(idConnection).activated = True) Or (RuneMakerOptions(idConnection).autoEat = True) Then
          AfterLoginLogoutReason(idConnection) = "YOU DIED!" & vbLf & "Auto reconnection canceled to avoid potential disasters."
        End If
@@ -5756,7 +5759,11 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
       
 
       templ2 = 0
-      If TibiaVersionLong >= 872 Then
+      If TibiaVersionLong >= 1055 Then
+        If tempb1 = &H12 Then
+            templ2 = 1
+        End If
+      ElseIf TibiaVersionLong >= 872 Then
         If tempb1 = &H11 Then
             templ2 = 1
         End If
