@@ -2011,7 +2011,7 @@ Public Function PacketIPchange5(ByRef packet() As Byte, ByVal idConnection As In
   Dim strangeNewThingLen As Long
   'On Error GoTo returnTheResult
   
-    'Debug.Print "ORIGINAL>" & frmMain.showAsStr(packet, True)
+    Debug.Print "PacketIPchange5 ORIGINAL>" & frmMain.showAsStr(packet, True)
     
   lLocal = Len(localstr)
   b1Local = HighByteOfLong(lLocal)
@@ -2023,7 +2023,7 @@ Public Function PacketIPchange5(ByRef packet() As Byte, ByVal idConnection As In
   res = -1 'error
   adder = bstart - 2
   If packet(2 + adder) <> &H28 Then
-    Debug.Print "This is not a list of character Tibia 10.74+ packet... Received type = " & GoodHex(packet(2))
+    Debug.Print "This is not a list of character Tibia 10.74+ packet... Received type = " & GoodHex(packet(2 + adder))
     res = -1
     GoTo returnTheResult 'this is not a list of character packet
   End If
@@ -2035,7 +2035,7 @@ Public Function PacketIPchange5(ByRef packet() As Byte, ByVal idConnection As In
     GoTo returnTheResult 'proxy user don't want to change this packet
   End If
   If packet(adder + 5 + strangeNewThingLen) <> &H14 Then
-    Debug.Print "This is not a list of character packet... Received type = " & GoodHex(packet(2))
+    Debug.Print "This is not a list of character packet... Received type at " & CStr(adder + 5 + strangeNewThingLen) & " = " & GoodHex(packet(adder + 5 + strangeNewThingLen))
     res = -1
     GoTo returnTheResult 'this is not a list of character packet
   End If
@@ -2343,9 +2343,11 @@ Public Function PacketIPchange5b(ByRef packet() As Byte, ByVal idConnection As I
   Dim realL As Long
   Dim ultimoTI As Long
   Dim strangeNewThingLen As Long
+  Dim with28 As Boolean
+
   'On Error GoTo returnTheResult
   
-    Debug.Print "ORIGINAL>" & frmMain.showAsStr(packet, True)
+    'Debug.Print "PacketIPchange5b ORIGINAL>" & frmMain.showAsStr(packet, True)
     
   lLocal = Len(localstr)
   b1Local = HighByteOfLong(lLocal)
@@ -2363,7 +2365,7 @@ Public Function PacketIPchange5b(ByRef packet() As Byte, ByVal idConnection As I
     GoTo returnTheResult 'proxy user don't want to change this packet
   End If
   If packet(adder + 2) <> &H14 Then
-    Debug.Print "This is not a list of character packet... Received type = " & GoodHex(packet(2))
+    Debug.Print "This is not a list of character packet... " & CStr(adder + 2) & " Received type = " & GoodHex(packet(adder + 2))
     res = -1
     GoTo returnTheResult 'this is not a list of character packet
   End If
@@ -2372,17 +2374,21 @@ Public Function PacketIPchange5b(ByRef packet() As Byte, ByVal idConnection As I
   lon = GetTheLong(packet(0 + adder), packet(1 + adder))
 motd = GetTheLong(packet(3 + adder), packet(4 + adder))
  'motd = GetTheLong(packet(3 + adder + 3 + strangeNewThingLen), packet(4 + adder + 3 + strangeNewThingLen))
- 
+   with28 = True
   If packet(adder + 5 + motd) <> &H28 Then
-    Debug.Print "This is not a list of character packet... Received type = " & GoodHex(packet(2))
-    res = -1
-    GoTo returnTheResult 'this is not a list of character packet
+    with28 = False
+      If packet(adder + 5 + motd) <> &H64 Then
+        Debug.Print "This is not a list of character packet... " & CStr(adder + 5 + motd) & " Received type = " & GoodHex(packet(adder + 5 + motd))
+        res = -1
+        GoTo returnTheResult 'this is not a list of character packet
+      End If
   End If
-   strangeNewThingLen = GetTheLong(packet(adder + 5 + motd + 1), packet(adder + 5 + motd + 2))
-
- ' pos = motd + 5 + adder + 2 ' 2 new bytes after motd since tibia 10.61 :
-pos = adder + 5 + motd + 3 + strangeNewThingLen
-  
+  If with28 = True Then
+    strangeNewThingLen = GetTheLong(packet(adder + 5 + motd + 1), packet(adder + 5 + motd + 2))
+    pos = adder + 5 + motd + 3 + strangeNewThingLen
+  Else
+    pos = adder + 5 + motd
+  End If
   tipoBloque = packet(pos)
   pos = pos + 1
 
@@ -2612,7 +2618,7 @@ pos = adder + 5 + motd + 3 + strangeNewThingLen
   'Debug.Print frmMain.showAsStr(packet, True)
   
 
- Debug.Print "NEW PCKT>" & frmMain.showAsStr(packetNEW, True)
+ 'Debug.Print "NEW PCKT>" & frmMain.showAsStr(packetNEW, True)
  
   frmMain.UnifiedSendToClient idConnection, packetNEW, False, True
 
@@ -2623,13 +2629,6 @@ returnTheResult:
   'LogOnFile "gotthem.txt", "AFTER (" & CStr(res) & ")> " & frmMain.showAsStr2(packet, 0) & vbCrLf
   PacketIPchange5b = res
 End Function
-
-
-
-
-
-
-
 
 
 
