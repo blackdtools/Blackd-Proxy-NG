@@ -34,8 +34,8 @@ Public addConfigPaths As String ' list of new config paths here
 Public addConfigVersions As String ' relative versions
 Public addConfigVersionsLongs As String 'relative version longs
 
-Public Const ProxyVersion = "4.6" ' Proxy version ' string version
-Public Const myNumericVersion = 460 ' numeric version
+Public Const ProxyVersion = "4.7" ' Proxy version ' string version
+Public Const myNumericVersion = 470 ' numeric version
 Public Const myAuthProtocol = 2 ' authetication protocol
 Public Const TrialVersion = False ' true=trial version
 
@@ -6202,8 +6202,12 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
       ' report statement result?
       If TibiaVersionLong >= 1080 Then
         ' Tibia 10.80+
+        ' tibia coins?
         ' F2 00
+        ' F2 01 DF 01 FA 00 00 00 FA 00 00 00
+        templ1 = CLng(packet(pos + 1))
         pos = pos + 2
+        pos = pos + (templ1 * 10)
       Else
         templ1 = GetTheLong(packet(pos + 1), packet(pos + 2))
         pos = pos + 3 + templ1
