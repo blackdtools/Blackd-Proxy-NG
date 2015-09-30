@@ -70,8 +70,12 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-    'Me.lblText = "What is new?"
-     strMsg = "Blackd Proxy NG 4.7" & vbCrLf & _
+
+     strMsg = "Blackd Proxy NG 4.8" & vbCrLf & _
+     "----------------------------" & vbCrLf & _
+     " - Fixed a bug with a new packet related with Tibia coins at Tibia 10.82"
+     
+     strMsg = strMsg & vbCrLf & "Blackd Proxy NG 4.7" & vbCrLf & _
      "----------------------------" & vbCrLf & _
      " - Fixed a bug with a new packet related with Tibia coins at Tibia 10.81"
      
