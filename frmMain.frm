@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "mswinsck.ocx"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Object = "{5E9E78A0-531B-11CF-91F6-C2863C385E30}#1.0#0"; "MSFLXGRD.OCX"
 Begin VB.Form frmMain 
    BorderStyle     =   4  'Fixed ToolWindow
@@ -7426,7 +7426,21 @@ Private Function LearnFromServerLogin(ByRef packet() As Byte, ByVal index As Int
     c = packet(bstart)
     Select Case c
     Case &H28
-       If TibiaVersionLong >= 1074 Then
+       If TibiaVersionLong >= 1091 Then
+          res = PacketIPchange6(packet, index, strIP, bstart)
+      
+            If res <> 1 Then
+              txtPackets.Text = txtPackets.Text & vbCrLf & "ERROR: FAILED TO MODIFY LOGIN PACKET!"
+            Else
+              If CloseLoginServerAfterCharList = True Then
+                 If index > 0 Then
+                    sckServer(index).Close
+                 End If
+              End If
+              LearnFromServerLogin = 1
+              Exit Function
+            End If
+       ElseIf TibiaVersionLong >= 1074 Then
          res = PacketIPchange5(packet, index, strIP, bstart)
       
             If res <> 1 Then
@@ -7442,7 +7456,9 @@ Private Function LearnFromServerLogin(ByRef packet() As Byte, ByVal index As Int
             End If
        End If
     Case &H14
-      If TibiaVersionLong >= 1074 Then
+      If TibiaVersionLong >= 1091 Then
+        res = 1
+      ElseIf TibiaVersionLong >= 1074 Then
         res = PacketIPchange5b(packet, index, strIP, bstart)
       ElseIf TibiaVersionLong >= 1012 Then
         res = PacketIPchange4(packet, index, strIP, bstart)
