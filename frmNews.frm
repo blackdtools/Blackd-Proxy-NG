@@ -70,7 +70,11 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-     strMsg = "Blackd Proxy NG 5.0" & vbCrLf & _
+         strMsg = "Blackd Proxy NG 5.1" & vbCrLf & _
+     "----------------------------" & vbCrLf & _
+     " - Minimum changes to work in all Tibia versions up to 10.91"
+
+     strMsg = strMsg & vbCrLf & "Blackd Proxy NG 5.0" & vbCrLf & _
      "----------------------------" & vbCrLf & _
      " - Minimum changes to work in all Tibia versions up to 10.90"
      
