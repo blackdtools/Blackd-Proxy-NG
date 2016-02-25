@@ -1210,9 +1210,9 @@ End Function
 
 
 
-Public Sub ShowPositionChange(Index As Integer)
+Public Sub ShowPositionChange(index As Integer)
   ' do any required update of position and map
-  If Index = mapIDselected Then
+  If index = mapIDselected Then
     If TrialVersion = True Then
       If sentWelcome(mapIDselected) = False Or GotPacketWarning(mapIDselected) = True Then
         Exit Sub
@@ -1220,16 +1220,16 @@ Public Sub ShowPositionChange(Index As Integer)
     End If
     'update map
     If frmHardcoreCheats.chkAutoUpdateMap.Value = True Then
-      If mapIDselected = Index Then
+      If mapIDselected = index Then
         If frmHardcoreCheats.chkLockOnMyFloor.Value = 1 Then
-          mapFloorSelected = myZ(Index)
+          mapFloorSelected = myZ(index)
         End If
         frmTrueMap.SetButtonColours
         frmTrueMap.DrawFloor
       End If
     Else
-     If mapIDselected = Index Then
-        If mapFloorSelected <> myZ(Index) Then
+     If mapIDselected = index Then
+        If mapFloorSelected <> myZ(index) Then
           frmTrueMap.SetButtonColours
         End If
       End If
@@ -3801,22 +3801,46 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
            pos = pos + 1
         End If
       End If
-    Case &H72
+ Case &H72
       ' remove item from container ID
       somethingChangedInBps(idConnection) = True
       pauseStacking(idConnection) = 0
       templ1 = packet(pos + 1)
       If ((TibiaVersionLong >= 991) Or ((TibiaVersionLong >= 984) And (TibiaVersionLong < 990))) Then
         ' slot id
-        templ2 = GetTheLong(packet(pos + 2), packet(pos + 3))
+        templ2 = GetTheLong(packet(pos + 4), packet(pos + 5))
         ' and 2 extra bytes , usually 00 00
-        pos = pos + 6
+        If templ2 > 0 Then
+          ' Handles a special case: Removing an item from a full inbox (several pages)
+          If DatTiles(templ2).haveExtraByte = True Then
+              If DatTiles(templ2).haveExtraByte2 = True Then
+                frmBackpacks.RemoveItem idConnection, templ1, templ2, packet(pos + 4), packet(pos + 5), packet(pos + 7), packet(pos + 8)
+                pos = pos + 3
+              Else
+                frmBackpacks.RemoveItem idConnection, templ1, templ2, packet(pos + 4), packet(pos + 5), packet(pos + 7), &H0
+                pos = pos + 2
+              End If
+            Else
+              If DatTiles(templ2).haveExtraByte2 = True Then
+                frmBackpacks.RemoveItem idConnection, templ1, templ2, packet(pos + 4), packet(pos + 5), &H0, packet(pos + 7)
+                pos = pos + 2
+              Else
+                frmBackpacks.RemoveItem idConnection, templ1, templ2, packet(pos + 4), packet(pos + 5), &H0, &H0
+                pos = pos + 1
+              End If
+            End If
+            pos = pos + 6
+        Else
+           pos = pos + 6
+           frmBackpacks.RemoveItem idConnection, templ1, templ2
+        End If
       Else
         templ2 = packet(pos + 2)
         pos = pos + 3
+          frmBackpacks.RemoveItem idConnection, templ1, templ2
       End If
-      frmBackpacks.RemoveItem idConnection, templ1, templ2
-     
+      'Debug.Print frmMain.showAsStr(packet, True)
+      'Debug.Print GoodHex(packet(pos))
     Case &H78
       ' inventory slot get something
       tileID = GetTheLong(packet(pos + 2), packet(pos + 3))
