@@ -34,8 +34,8 @@ Public addConfigPaths As String ' list of new config paths here
 Public addConfigVersions As String ' relative versions
 Public addConfigVersionsLongs As String 'relative version longs
 
-Public Const ProxyVersion = "5.1" ' Proxy version ' string version
-Public Const myNumericVersion = 510 ' numeric version
+Public Const ProxyVersion = "5.2" ' Proxy version ' string version
+Public Const myNumericVersion = 520 ' numeric version
 Public Const myAuthProtocol = 2 ' authetication protocol
 Public Const TrialVersion = False ' true=trial version
 
@@ -1210,9 +1210,9 @@ End Function
 
 
 
-Public Sub ShowPositionChange(index As Integer)
+Public Sub ShowPositionChange(Index As Integer)
   ' do any required update of position and map
-  If index = mapIDselected Then
+  If Index = mapIDselected Then
     If TrialVersion = True Then
       If sentWelcome(mapIDselected) = False Or GotPacketWarning(mapIDselected) = True Then
         Exit Sub
@@ -1220,16 +1220,16 @@ Public Sub ShowPositionChange(index As Integer)
     End If
     'update map
     If frmHardcoreCheats.chkAutoUpdateMap.Value = True Then
-      If mapIDselected = index Then
+      If mapIDselected = Index Then
         If frmHardcoreCheats.chkLockOnMyFloor.Value = 1 Then
-          mapFloorSelected = myZ(index)
+          mapFloorSelected = myZ(Index)
         End If
         frmTrueMap.SetButtonColours
         frmTrueMap.DrawFloor
       End If
     Else
-     If mapIDselected = index Then
-        If mapFloorSelected <> myZ(index) Then
+     If mapIDselected = Index Then
+        If mapFloorSelected <> myZ(Index) Then
           frmTrueMap.SetButtonColours
         End If
       End If
