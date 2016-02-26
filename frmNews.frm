@@ -70,7 +70,11 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-     strMsg = "Blackd Proxy NG 5.3" & vbCrLf & _
+     strMsg = "Blackd Proxy NG 5.4" & vbCrLf & _
+    "----------------------------" & vbCrLf & _
+     " - Fixed a potential rare problem withen picking items from a full inbox."
+     
+     strMsg = strMsg & vbCrLf & "Blackd Proxy NG 5.3" & vbCrLf & _
      "----------------------------" & vbCrLf & _
      " - Fixed a bug with looting"
      
