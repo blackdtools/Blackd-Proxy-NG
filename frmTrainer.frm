@@ -1653,6 +1653,14 @@ Private Sub timerTrainer_Timer()
                sfoundhere = sPos
                'Exit For
              End If
+             If (TibiaVersionLong > 860) Then
+               If gotTileID > 0 Then
+                If (DatTiles(gotTileID).notMoveable = False) And (DatTiles(gotTileID).alwaysOnTop = False) And (DatTiles(gotTileID).groundtile = False) Then
+                  sfoundhere = sPos
+                  'Exit For
+                End If
+               End If
+             End If
            ElseIf (Matrix(-1 + (slotID \ 3), -1 + (slotID Mod 3), myZ(idConnection), idConnection).s(sPos).t1 = TrainerOptions(idConnection).spearID_b1) And _
              (Matrix(-1 + (slotID \ 3), -1 + (slotID Mod 3), myZ(idConnection), idConnection).s(sPos).t2 = TrainerOptions(idConnection).spearID_b2) Then
              sfoundhere = sPos

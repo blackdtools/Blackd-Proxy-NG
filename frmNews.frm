@@ -70,7 +70,12 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-     strMsg = "Blackd Proxy NG 5.4" & vbCrLf & _
+     strMsg = "Blackd Proxy NG 5.5" & vbCrLf & _
+    "----------------------------" & vbCrLf & _
+     " - Fixed bot crash when opening the new window to purchase extra services ingame." & vbCrLf & _
+     " - Recovered Trainer ability to pick any item from ground to backpacks by entering 00 00 as ITEM ID"
+     
+     strMsg = strMsg & vbCrLf & "Blackd Proxy NG 5.4" & vbCrLf & _
     "----------------------------" & vbCrLf & _
      " - Fixed a potential rare problem withen picking items from a full inbox."
      
