@@ -34,8 +34,8 @@ Public addConfigPaths As String ' list of new config paths here
 Public addConfigVersions As String ' relative versions
 Public addConfigVersionsLongs As String 'relative version longs
 
-Public Const ProxyVersion = "5.5" ' Proxy version ' string version
-Public Const myNumericVersion = 550 ' numeric version
+Public Const ProxyVersion = "5.6" ' Proxy version ' string version
+Public Const myNumericVersion = 560 ' numeric version
 Public Const myAuthProtocol = 2 ' authetication protocol
 Public Const TrialVersion = False ' true=trial version
 
@@ -4201,6 +4201,12 @@ Public Function LearnFromPacket(ByRef packet() As Byte, pos As Long, idConnectio
       ' more effects - happens at summoned monks, for example
       ' 94 13 44 A7 02 02 00
       pos = pos + 7
+    Case &H95
+      ' more effects - packet found at ot server 10.90 when demons summon fire elementals
+      ' 95 77 09 30 40 01 83 31 7D 44 79 09 25
+      ' packet is probably only 95 77 09 30 40 01
+      ' NOTE: UNTESTED
+      pos = pos + 6
     Case &H96
       ' open book
       ' tibia 10.01 : 96 2A FF 74 02 B1 0D FF CF 07 00 00 00 00 00 00
