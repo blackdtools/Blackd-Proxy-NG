@@ -70,7 +70,11 @@ End Sub
 
 Private Sub Form_Load()
     Dim strMsg As String
-     strMsg = "Blackd Proxy NG 5.6" & vbCrLf & _
+     strMsg = "Blackd Proxy NG 5.7" & vbCrLf & _
+    "----------------------------" & vbCrLf & _
+     " - Minimum changes to work in all Tibia versions up to 10.92"
+     
+     strMsg = strMsg & vbCrLf & "Blackd Proxy NG 5.6" & vbCrLf & _
     "----------------------------" & vbCrLf & _
      " - Fixed a rare case of bot crash with summoned creatures at Tibia 10.90+"
      
