@@ -1,6 +1,7 @@
 Attribute VB_Name = "modMap"
 #Const FinalMode = 1
 #Const MapDebug = 0
+#Const DEBUG_SHOP = 0
 Option Explicit
 
 
@@ -34,8 +35,8 @@ Public addConfigPaths As String ' list of new config paths here
 Public addConfigVersions As String ' relative versions
 Public addConfigVersionsLongs As String 'relative version longs
 
-Public Const ProxyVersion = "5.7" ' Proxy version ' string version
-Public Const myNumericVersion = 570 ' numeric version
+Public Const ProxyVersion = "5.8" ' Proxy version ' string version
+Public Const myNumericVersion = 580 ' numeric version
 Public Const myAuthProtocol = 2 ' authetication protocol
 Public Const TrialVersion = False ' true=trial version
 
@@ -6499,7 +6500,7 @@ pos = pos + 4 + (15 * templ2)
         ' 01 00 00
         pos = pos + 2 + templ2
       End If
-       Case &HFB
+      Case &HFB
       ' tibia premium services shop (categories)
       pos = pos + 10
       templ2 = GetTheLong(packet(pos), packet(pos + 1))
@@ -6512,7 +6513,9 @@ pos = pos + 4 + (15 * templ2)
              mobName = mobName & Chr(packet(pos))
              pos = pos + 1
            Next itemCount
-          ' Debug.Print "> " & mobName
+           #If DEBUG_SHOP = 1 Then
+            Debug.Print "CATEGORY NAME> " & mobName
+           #End If
            lonN = GetTheLong(packet(pos), packet(pos + 1))
            pos = pos + 2
            mobName = ""
@@ -6520,8 +6523,15 @@ pos = pos + 4 + (15 * templ2)
              mobName = mobName & Chr(packet(pos))
              pos = pos + 1
            Next itemCount
-           'Debug.Print "> " & mobName
-           pos = pos + 1 ' single byte
+           #If DEBUG_SHOP = 1 Then
+            Debug.Print "CATEGORY DESCRIPTION> " & mobName
+           #End If
+           #If DEBUG_SHOP = 1 Then
+            Debug.Print "COLOR> " & GoodHex(packet(pos))
+            Debug.Print "AVAILABLE> " & GoodHex(packet(pos + 1))
+           #End If
+           pos = pos + 2 ' 2 bytes
+           
            lonN = GetTheLong(packet(pos), packet(pos + 1))
            pos = pos + 2
            mobName = ""
@@ -6529,7 +6539,9 @@ pos = pos + 4 + (15 * templ2)
              mobName = mobName & Chr(packet(pos))
              pos = pos + 1
            Next itemCount
-          ' Debug.Print "> " & mobName
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "ICON> " & mobName
+           #End If
            lonN = GetTheLong(packet(pos), packet(pos + 1))
            pos = pos + 2
            mobName = ""
@@ -6537,10 +6549,12 @@ pos = pos + 4 + (15 * templ2)
              mobName = mobName & Chr(packet(pos))
              pos = pos + 1
            Next itemCount
-          ' Debug.Print "> " & mobName
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "UNKNOWN> " & mobName
+           #End If
       Next templ1
     Case &HFC
-         ' Tibia premium services shop (items)
+       ' Tibia premium services shop (items)
        ' Parser updated for Tibia 10.92
       pos = pos + 1
       lonN = GetTheLong(packet(pos), packet(pos + 1))
@@ -6550,12 +6564,16 @@ pos = pos + 4 + (15 * templ2)
         mobName = mobName & Chr(packet(pos))
         pos = pos + 1
       Next itemCount
-      'Debug.Print "SELECTED CATEGORY> " & mobName
+      #If DEBUG_SHOP = 1 Then
+        Debug.Print "SELECTED CATEGORY> " & mobName
+      #End If
       templ2 = GetTheLong(packet(pos), packet(pos + 1))
       pos = pos + 2
       For templ1 = 1 To templ2
            lonN = CLng(FourBytesDouble(packet(pos), packet(pos + 1), packet(pos + 2), packet(pos + 3)))
-           'Debug.Print "PRODUCT ID> " & lonN
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "PRODUCT ID> " & lonN
+           #End If
            pos = pos + 4
            
            lonN = GetTheLong(packet(pos), packet(pos + 1))
@@ -6565,7 +6583,9 @@ pos = pos + 4 + (15 * templ2)
              mobName = mobName & Chr(packet(pos))
              pos = pos + 1
            Next itemCount
-          ' Debug.Print "PRODUCT NAME> " & mobName
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "PRODUCT NAME> " & mobName
+           #End If
            lonN = GetTheLong(packet(pos), packet(pos + 1))
            pos = pos + 2
            mobName = ""
@@ -6573,12 +6593,33 @@ pos = pos + 4 + (15 * templ2)
              mobName = mobName & Chr(packet(pos))
              pos = pos + 1
            Next itemCount
-          ' Debug.Print "DESCRIPTION> " & mobName
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "DESCRIPTION> " & mobName
+           #End If
            lonN = CLng(FourBytesDouble(packet(pos), packet(pos + 1), packet(pos + 2), packet(pos + 3)))
-          ' Debug.Print "PRICE> " & lonN
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "PRICE> " & lonN
+           #End If
            pos = pos + 4
-         '  Debug.Print "2BYTES> " & GoodHex(packet(pos)) & " " & GoodHex(packet(pos + 1))
-           pos = pos + 2 ' skip 2 bytes 00 00
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "COLOR> " & GoodHex(packet(pos))
+             Debug.Print "AVAILABLE> " & GoodHex(packet(pos + 1))
+           #End If
+           templ2 = CLng(packet(pos + 1))
+           pos = pos + 2 ' skip 2 bytes
+           If templ2 = 1 Then ' there is an additional string message if the byte "AVAILABLE" equals exactly 1
+             lonN = GetTheLong(packet(pos), packet(pos + 1))
+             pos = pos + 2
+             mobName = ""
+             For itemCount = 1 To lonN
+               mobName = mobName & Chr(packet(pos))
+               pos = pos + 1
+             Next itemCount
+             #If DEBUG_SHOP = 1 Then
+               Debug.Print "MISSING REQUIREMENTS> " & mobName
+             #End If
+           End If
+           
            templ2 = CLng(packet(pos))
            pos = pos + 1
            For lonNumItems = 1 To templ2
@@ -6589,7 +6630,9 @@ pos = pos + 4 + (15 * templ2)
                mobName = mobName & Chr(packet(pos))
                pos = pos + 1
              Next itemCount
-            ' Debug.Print "ICON" & CStr(lonNumItems) & "> " & mobName
+           #If DEBUG_SHOP = 1 Then
+             Debug.Print "ICON" & CStr(lonNumItems) & "> " & mobName
+           #End If
            Next lonNumItems
            templ2 = GetTheLong(packet(pos), packet(pos + 1))
            pos = pos + 2
@@ -6601,7 +6644,9 @@ pos = pos + 4 + (15 * templ2)
                mobName = mobName & Chr(packet(pos))
                pos = pos + 1
              Next itemCount
-            ' Debug.Print "PACK ITEM NAME> " & mobName
+             #If DEBUG_SHOP = 1 Then
+               Debug.Print "PACK ITEM NAME> " & mobName
+             #End If
              lonN = GetTheLong(packet(pos), packet(pos + 1))
              pos = pos + 2
              mobName = ""
@@ -6609,8 +6654,9 @@ pos = pos + 4 + (15 * templ2)
                mobName = mobName & Chr(packet(pos))
                pos = pos + 1
              Next itemCount
-            ' Debug.Print "PACK ITEM DESCRIPTION> " & mobName
-             
+             #If DEBUG_SHOP = 1 Then
+               Debug.Print "PACK ITEM DESCRIPTION> " & mobName
+             #End If
              templ3 = CLng(packet(pos))
              pos = pos + 1
              For lonNumItems2 = 1 To templ3
@@ -6621,16 +6667,19 @@ pos = pos + 4 + (15 * templ2)
                  mobName = mobName & Chr(packet(pos))
                  pos = pos + 1
                Next itemCount
-              ' Debug.Print "PACK ICON" & CStr(lonNumItems2) & "> " & mobName
+               #If DEBUG_SHOP = 1 Then
+                 Debug.Print "PACK ICON" & CStr(lonNumItems2) & "> " & mobName
+               #End If
              Next lonNumItems2
-             
              lonN = GetTheLong(packet(pos), packet(pos + 1))
              pos = pos + 2
              For itemCount = 1 To lonN
                mobName = mobName & Chr(packet(pos))
                pos = pos + 1
              Next itemCount
-             'Debug.Print "PACK ITEM FLAGS> " & mobName
+             #If DEBUG_SHOP = 1 Then
+               Debug.Print "PACK ITEM FLAGS> " & mobName
+             #End If
            Next lonNumItems
          
       Next templ1
